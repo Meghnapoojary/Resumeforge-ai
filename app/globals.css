@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap");
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #F6F3EC;
+  color: #17233B;
+}
+
+::selection {
+  background: #E4CFA0;
+  color: #17233B;
+}
+
+/* Visible keyboard focus everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #B8892B;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print rules for PDF export via browser print */
+@media print {
+  /* Print only the actual resume preview, while keeping the editor mounted. */
+  .builder-editor > section:not(.resume-preview) {
+    display: none !important;
+  }
+
+  .resume-preview {
+    display: block !important;
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #resume-print-area,
+  #resume-print-area * {
+    visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #resume-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 8.5in !important;
+    max-width: 8.5in !important;
+    min-height: 11in !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #resume-print-area img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: 8.5in 11in;
+    margin: 0;
+  }
+}

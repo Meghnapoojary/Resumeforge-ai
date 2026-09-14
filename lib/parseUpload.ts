@@ -1,13 +1,29 @@
-import { CanvasFactory, getData } from "pdf-parse/worker";
-import { PDFParse } from "pdf-parse";
-
-// pdf-parse v2 needs an explicit worker in serverless/Next.js environments.
-// Without this, Vercel can fail with: ERR_INVALID_URL (input: '').
-PDFParse.setWorker(getData());
 import mammoth from "mammoth";
+
+/**
+ * Load pdf-parse only at runtime. Its v2 dependency tree includes a native
+ * @napi-rs/canvas .node binary. A normal static import makes Next/Webpack
+ * try to parse that binary during `next build`, which fails on Vercel.
+ * Using a runtime require keeps the native dependency out of the build graph
+ * while still allowing the Node.js serverless function to load it at runtime.
+ */
+function loadPdfParser(): { PDFParse: any; CanvasFactory: any; getData: () => any } {
+  // Intentionally dynamic so Webpack cannot statically traverse pdf-parse's
+  // native canvas dependency during the Next.js build.
+  const runtimeRequire = eval("require") as NodeRequire;
+  const pdfParse = runtimeRequire(["pdf", "-parse"].join(""));
+  const worker = runtimeRequire(["pdf", "-parse", "/worker"].join(""));
+  return {
+    PDFParse: pdfParse.PDFParse,
+    CanvasFactory: worker.CanvasFactory,
+    getData: worker.getData,
+  };
+}
 
 /** Extracts plain text from a PDF buffer. */
 export async function parsePdfBuffer(buffer: Buffer): Promise<string> {
+  const { PDFParse, CanvasFactory, getData } = loadPdfParser();
+  PDFParse.setWorker(getData());
   const parser = new PDFParse({ data: buffer, CanvasFactory });
   try {
     const result = await parser.getText();

@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
+  experimental: {
+    serverComponentsExternalPackages: ["pdf-parse"],
+  },
 };
 
 export default nextConfig;

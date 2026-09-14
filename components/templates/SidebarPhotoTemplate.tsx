@@ -13,9 +13,21 @@ export default function SidebarPhotoTemplate({ resume, accent = "#2255D8", densi
     >
       {/* Colored sidebar */}
       <aside
-        className="text-white"
-        style={{ backgroundColor: accent, padding: tight ? "0.5in 0.35in" : "0.6in 0.4in" }}
+        className="relative overflow-hidden text-white"
+        style={{ backgroundColor: accent, padding: tight ? "0.5in 0.35in" : "0.6in 0.4in", printColorAdjust: "exact", WebkitPrintColorAdjust: "exact" as any }}
       >
+        {/* SVG fallback keeps the colored sidebar visible in browser PDF/print even when
+            the browser's background-graphics preference is disabled. */}
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox="0 0 1 1"
+          preserveAspectRatio="none"
+          focusable="false"
+        >
+          <rect width="1" height="1" fill={accent} />
+        </svg>
+        <div className="relative z-[1]">
         {resume.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -68,6 +80,7 @@ export default function SidebarPhotoTemplate({ resume, accent = "#2255D8", densi
             </div>
           </div>
         )}
+        </div>
       </aside>
 
       {/* Main content */}

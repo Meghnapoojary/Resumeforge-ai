@@ -39,37 +39,64 @@ select:focus-visible,
 
 /* Print rules for PDF export via browser print */
 @media print {
-  /* The editor must stay mounted during print so the actual resume can render. */
-  .builder-editor > section:not(.resume-preview) {
+  /* Keep only the actual resume in the print tree. */
+  .builder-editor > section:not(.resume-preview),
+  .resume-preview > h2,
+  .builder-editor + aside {
     display: none !important;
   }
 
   .resume-preview {
     display: block !important;
-    width: 100% !important;
+    width: 210mm !important;
     margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
   }
 
   body * {
     visibility: hidden;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   #resume-print-area,
   #resume-print-area * {
     visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   #resume-print-area {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    max-width: none !important;
+    width: 210mm !important;
+    min-height: 11in !important;
+    max-width: 210mm !important;
     margin: 0 !important;
     box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* Prevent the resume grid/sections from being split unnecessarily. */
+  #resume-print-area section,
+  #resume-print-area article,
+  #resume-print-area aside {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   @page {
-    margin: 0.5in;
+    size: A4 portrait;
+    margin: 0;
   }
 }

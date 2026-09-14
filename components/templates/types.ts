@@ -41,4 +41,5 @@ export const ACCENT_PRESETS = [
   { name: "Slate", value: "#3C4C6B" },
   { name: "Teal", value: "#0F9E8E" },
   { name: "Berry", value: "#B23A6B" },
+  { name: "Pink", value: "#D9467D" },
 ];

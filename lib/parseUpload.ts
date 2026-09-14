@@ -1,18 +1,20 @@
 import mammoth from "mammoth";
+import { createRequire } from "node:module";
 
 /**
- * Load pdf-parse only at runtime. Its v2 dependency tree includes a native
- * @napi-rs/canvas .node binary. A normal static import makes Next/Webpack
- * try to parse that binary during `next build`, which fails on Vercel.
- * Using a runtime require keeps the native dependency out of the build graph
- * while still allowing the Node.js serverless function to load it at runtime.
+ * pdf-parse v2 is a server-only dependency and includes native canvas code.
+ * Keep it external to Next/Webpack (see next.config.mjs) and load it with a
+ * normal runtime require so Next's output file tracer can still detect the
+ * package and include it in the Vercel serverless function.
  */
+const require = createRequire(import.meta.url);
+
 function loadPdfParser(): { PDFParse: any; CanvasFactory: any; getData: () => any } {
-  // Intentionally dynamic so Webpack cannot statically traverse pdf-parse's
-  // native canvas dependency during the Next.js build.
-  const runtimeRequire = eval("require") as NodeRequire;
-  const pdfParse = runtimeRequire(["pdf", "-parse"].join(""));
-  const worker = runtimeRequire(["pdf", "-parse", "/worker"].join(""));
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const pdfParse = require("pdf-parse");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const worker = require("pdf-parse/worker");
+
   return {
     PDFParse: pdfParse.PDFParse,
     CanvasFactory: worker.CanvasFactory,

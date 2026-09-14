@@ -141,3 +141,6 @@ than silently apply it un-tested, this build stays on the latest **patched**
 is low-risk; before deploying somewhere public-facing, plan an explicit
 Next.js 16 migration pass (update every `{ params }` destructure to
 `await params`, then re-test each route).
+
+
+PDF uploads now fall back to Gemini extraction for image-only PDFs when GEMINI_API_KEY is configured.

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseUploadedFile } from "@/lib/parseUpload";
+import { parsePdfBuffer, parsePdfWithGemini, parseUploadedFile } from "@/lib/parseUpload";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,11 +16,18 @@ export async function POST(req: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const text = await parseUploadedFile(buffer, file.name);
+    let text = await parseUploadedFile(buffer, file.name);
+
+    // Browser/OS "Print to PDF" can produce image-only PDFs. When the normal
+    // text-layer parser returns nothing, use the app's existing Gemini key as
+    // a server-side vision/OCR fallback instead of rejecting the upload.
+    if (!text.trim() && file.name.toLowerCase().endsWith(".pdf")) {
+      text = await parsePdfWithGemini(buffer);
+    }
 
     if (!text.trim()) {
       return NextResponse.json(
-        { error: "Couldn't find any readable text in that file." },
+        { error: "Couldn't find any readable text in that file. If this is a scanned or image-only PDF, make sure GEMINI_API_KEY is configured." },
         { status: 422 }
       );
     }

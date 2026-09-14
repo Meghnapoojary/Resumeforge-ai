@@ -141,6 +141,3 @@ than silently apply it un-tested, this build stays on the latest **patched**
 is low-risk; before deploying somewhere public-facing, plan an explicit
 Next.js 16 migration pass (update every `{ params }` destructure to
 `await params`, then re-test each route).
-
-## PDF printing
-The builder's browser PDF export is configured for a Letter-size 8.5 x 11 inch page with zero print margins and exact print colors, so theme backgrounds (including Sidebar Photo's accent color) remain visible in the PDF preview.

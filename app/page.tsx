@@ -34,8 +34,23 @@ export default function HomePage() {
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch("/api/parse-upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Couldn't read that file.");
+      const contentType = res.headers.get("content-type") || "";
+      let data: any = null;
+
+      if (contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        // Vercel can return an HTML error page for an unhandled function error.
+        // Avoid showing a misleading JSON parse error to the user.
+        const text = await res.text();
+        throw new Error(
+          res.ok
+            ? "The upload service returned an unexpected response."
+            : "The server could not process this file. Please try again or use a text/DOCX file."
+        );
+      }
+
+      if (!res.ok) throw new Error(data?.error || "Couldn't read that file.");
       setUploadedText(data.text);
     } catch (err: any) {
       setError(err.message);
